@@ -20,12 +20,17 @@ public class GitHubAPI {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    // TODO: Find a way to handle these as passed constructor arguments or something else
-    private static final String TOKEN = "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";
-    private static final String OWNER = "radepejanvic";
-    private static final String REPO = "tank-turret-simulator";
+    private String repo;
+    private String owner;
+    private String token;
 
-    private static Optional<String> extractNextPageURL(String linkHeader) {
+    public GitHubAPI(String repo, String owner, String token) {
+        this.repo = repo;
+        this.owner = owner;
+        this.token = token;
+    }
+
+    private Optional<String> extractNextPageURL(String linkHeader) {
         if (linkHeader == null || linkHeader.isEmpty()) {
             return Optional.empty();
         }
@@ -34,16 +39,16 @@ public class GitHubAPI {
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 
-    public static List<String> listCommits(String branch) throws IOException, InterruptedException {
+    public List<String> listCommits(String branch) throws IOException, InterruptedException {
         List<Commit> commits = new ArrayList<>();
 
-        String pageUrl = String.format("https://api.github.com/repos/%s/%s/commits?sha=%s&page=1", OWNER, REPO, branch);
+        String pageUrl = String.format("https://api.github.com/repos/%s/%s/commits?sha=%s&page=1", owner, repo, branch);
         String linkHeader;
 
         while (pageUrl != null) {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(pageUrl))
-                    .header("Authorization", "token " + TOKEN)
+                    .header("Authorization", "token " + token)
                     .header("Accept", "application/vnd.github.v3+json")
                     .GET()
                     .build();
@@ -63,14 +68,14 @@ public class GitHubAPI {
         return commits.stream().map(Commit::getSha).toList();
     }
 
-    public static List<String> compareCommits(String commit1, String commit2) throws IOException, InterruptedException {
+    public List<String> compareCommits(String commit1, String commit2) throws IOException, InterruptedException {
         List<ChangedFile> changedFiles;
 
-        String url = String.format("https://api.github.com/repos/%s/%s/compare/%s...%s", OWNER, REPO, commit1, commit2);
+        String url = String.format("https://api.github.com/repos/%s/%s/compare/%s...%s", owner, repo, commit1, commit2);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .header("Authorization", "token " + TOKEN)
+                .header("Authorization", "token " + token)
                 .header("Accept", "application/vnd.github.v3+json")
                 .GET()
                 .build();
