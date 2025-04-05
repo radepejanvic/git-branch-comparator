@@ -62,4 +62,30 @@ public class GitHubAPI {
 
         return commits.stream().map(Commit::getSha).toList();
     }
+
+    public static List<String> compareCommits(String commit1, String commit2) throws IOException, InterruptedException {
+        List<ChangedFile> changedFiles;
+
+        String url = String.format("https://api.github.com/repos/%s/%s/compare/%s...%s", OWNER, REPO, commit1, commit2);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "token " + TOKEN)
+                .header("Accept", "application/vnd.github.v3+json")
+                .GET()
+                .build();
+
+        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) {
+            JsonNode rootNode = MAPPER.readTree(response.body());
+            JsonNode filesNode = rootNode.path("files");
+
+            changedFiles = MAPPER.readValue(filesNode.traverse(), new TypeReference<>() {});
+        } else {
+            throw new IOException("Error: " + response.statusCode());
+        }
+
+        return changedFiles.stream().map(ChangedFile::getFilename).toList();
+    }
 }
