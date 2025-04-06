@@ -4,15 +4,15 @@ import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GitUtils {
+public class LocalGitExecutor {
 
     private File repoPath;
 
-    public GitUtils(String repoPath) {
+    public LocalGitExecutor(String repoPath) {
         this.repoPath = new File(repoPath);
     }
 
-    public List<String> revList(String branchName) throws IOException, InterruptedException {
+    public List<String> getCommitHistory(String branchName) throws IOException, InterruptedException {
             ProcessBuilder processBuilder = new ProcessBuilder("git", "rev-list", branchName);
             processBuilder.directory(repoPath);
 
@@ -21,7 +21,7 @@ public class GitUtils {
             return readOutput(process.getInputStream());
     }
 
-    public List<String> diffNameOnly(String commit1, String commit2) throws IOException, InterruptedException {
+    public List<String> getChangedFilesNames(String commit1, String commit2) throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder("git", "diff", "--name-only", commit1, commit2);
         processBuilder.directory(repoPath);
 

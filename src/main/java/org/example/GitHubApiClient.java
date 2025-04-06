@@ -15,7 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class GitHubAPI {
+public class GitHubApiClient {
     private static final Pattern LINK_PATTERN = Pattern.compile("<(.*?)>;\\s*rel=\"next\"");
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -24,7 +24,7 @@ public class GitHubAPI {
     private String owner;
     private String token;
 
-    public GitHubAPI(String repo, String owner, String token) {
+    public GitHubApiClient(String repo, String owner, String token) {
         this.repo = repo;
         this.owner = owner;
         this.token = token;
@@ -39,7 +39,7 @@ public class GitHubAPI {
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 
-    public List<String> listCommits(String branch) throws IOException, InterruptedException {
+    public List<String> getCommitHistory(String branch) throws IOException, InterruptedException {
         List<Commit> commits = new ArrayList<>();
 
         String pageUrl = String.format("https://api.github.com/repos/%s/%s/commits?sha=%s&page=1", owner, repo, branch);
@@ -68,7 +68,7 @@ public class GitHubAPI {
         return commits.stream().map(Commit::getSha).toList();
     }
 
-    public List<String> compareCommits(String commit1, String commit2) throws IOException, InterruptedException {
+    public List<String> getChangedFilesNames(String commit1, String commit2) throws IOException, InterruptedException {
         List<ChangedFile> changedFiles;
 
         String url = String.format("https://api.github.com/repos/%s/%s/compare/%s...%s", owner, repo, commit1, commit2);
