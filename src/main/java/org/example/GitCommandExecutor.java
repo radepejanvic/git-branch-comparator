@@ -23,10 +23,7 @@ public class GitCommandExecutor {
      * @throws InterruptedException If the process is interrupted.
      */
     public List<String> getCommitHistory(String branchName) throws GitCommandException, IOException, InterruptedException {
-            ProcessBuilder processBuilder = new ProcessBuilder("git", "rev-list", branchName);
-            processBuilder.directory(repoPath);
-
-            Process process = processBuilder.start();
+            Process process = executeCommand(List.of("git", "rev-list", branchName));
 
             String output = readOutput(process.getInputStream());
             String errorOutput = readOutput(process.getErrorStream());
@@ -51,10 +48,7 @@ public class GitCommandExecutor {
      * @throws InterruptedException If the process is interrupted.
      */
     public List<String> getModifiedFilesNames(String commit1, String commit2) throws GitCommandException, IOException, InterruptedException {
-        ProcessBuilder processBuilder = new ProcessBuilder("git", "diff", "--name-only", commit1, commit2);
-        processBuilder.directory(repoPath);
-
-        Process process = processBuilder.start();
+        Process process = executeCommand(List.of("git", "diff", "--name-only", commit1, commit2));
 
         String output = readOutput(process.getInputStream());
         String errorOutput = readOutput(process.getErrorStream());
@@ -66,6 +60,20 @@ public class GitCommandExecutor {
         }
 
         return Arrays.asList(output.split("\n"));
+    }
+
+    /**
+     * Executes given command in the given directory path.
+     *
+     * @param command Command and it's arguments as a list of strings.
+     * @return The {@link Process} representing the running command.
+     * @throws IOException If an I/O error occurs while starting the process.
+     */
+    private Process executeCommand(List<String> command)  throws IOException{
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.directory(repoPath);
+
+        return processBuilder.start();
     }
 
     /**
