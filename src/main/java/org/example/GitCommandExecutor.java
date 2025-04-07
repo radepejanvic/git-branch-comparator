@@ -19,7 +19,7 @@ public class GitCommandExecutor {
      * Retrieves the commit history for the specified branch.
      *
      * @param branchName The name of the branch to retrieve commits for.
-     * @return List of commit hashes in reverse order, sorted from the latest to the oldest.
+     * @return List of commit SHA hashes as strings in reverse chronological order (most recent first).
      * @throws GitCommandException If the Git command fails or an I/O or interruption error occurs during the execution.
      * This exception wraps underlying exceptions like {@link IOException} and {@link InterruptedException}
      */
@@ -44,8 +44,8 @@ public class GitCommandExecutor {
     /**
      * Retrieves the list of files modified between two commits.
      *
-     * @param commit1 The first commit hash.
-     * @param commit2 The second commit hash.
+     * @param commit1 The SHA of the first commit in the comparison.
+     * @param commit2 The SHA of the second commit in the comparison.
      * @return List of modified file paths.
      * @throws GitCommandException If the Git command fails or an I/O or interruption error occurs during the execution.
      * This exception wraps underlying exceptions like {@link IOException} and {@link InterruptedException}

@@ -19,19 +19,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GitHubApiClient {
     private static final Pattern LINK_PATTERN = Pattern.compile("<(.*?)>;\\s*rel=\"next\"");
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private HttpClient client;
-    private ObjectMapper mapper;
     private String repo;
     private String owner;
     private String token;
 
-    public GitHubApiClient(HttpClient client, ObjectMapper mapper, String repo, String owner, String token) {
+    public GitHubApiClient(HttpClient client, String repo, String owner, String token) {
         this.repo = repo;
         this.owner = owner;
         this.token = token;
         this.client = client;
-        this.mapper = mapper;
     }
 
     private Optional<String> extractNextPageURL(String linkHeader) {
@@ -43,6 +42,19 @@ public class GitHubApiClient {
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 
+    /**
+     * Retrieves the commit history for the specified branch from the GitHub repository.
+     * This method interacts with the GitHub API, handles pagination for large result sets,
+     * and returns the commit history in reverse chronological order (most recent first).
+     *
+     * @param branch The name of the branch for which commit history is to be fetched.
+     * @return List of commit SHA hashes as strings in reverse chronological order (most recent first).
+     * @throws GitHubApiException If an error occurs during the GitHub API request or response processing,
+     *                            including network issues, HTTP error responses, or parsing errors.
+     *
+     * @see HttpClient#send(HttpRequest, HttpResponse.BodyHandler)
+     * @see HttpResponse
+     */
     public List<String> getCommitHistory(String branch) throws GitHubApiException {
         try {
             List<Commit> commits = new ArrayList<>();
@@ -68,7 +80,7 @@ public class GitHubApiClient {
                 linkHeader = response.headers().firstValue("Link").orElse(null);
                 pageUrl = extractNextPageURL(linkHeader).orElse(null);
 
-                commits.addAll(mapper.readValue(response.body(), new TypeReference<>() {}));
+                commits.addAll(MAPPER.readValue(response.body(), new TypeReference<>() {}));
             }
 
             return commits.stream().map(Commit::getSha).toList();
@@ -79,6 +91,18 @@ public class GitHubApiClient {
         }
     }
 
+    /**
+     * Retrieves the list of modified file names between two commits in the specified GitHub repository.
+     *
+     * @param commit1 The SHA of the first commit in the comparison.
+     * @param commit2 The SHA of the second commit in the comparison.
+     * @return List of modified file names between the two commits.
+     * @throws GitHubApiException If an error occurs during the GitHub API request or response processing,
+     *                            including network issues, HTTP error responses, or parsing errors.
+     *
+     * @see HttpClient#send(HttpRequest, HttpResponse.BodyHandler)
+     * @see HttpResponse
+     */
     public List<String> getModifiedFilesNames(String commit1, String commit2) throws GitHubApiException {
         try {
             List<ChangedFile> changedFiles;
@@ -99,10 +123,10 @@ public class GitHubApiClient {
                 throw new GitHubApiException(String.format("GitHub get commit history failed: %s", response.statusCode()));
             }
 
-            JsonNode rootNode = mapper.readTree(response.body());
+            JsonNode rootNode = MAPPER.readTree(response.body());
             JsonNode filesNode = rootNode.path("files");
 
-            changedFiles = mapper.readValue(filesNode.traverse(), new TypeReference<>() {});
+            changedFiles = MAPPER.readValue(filesNode.traverse(), new TypeReference<>() {});
 
             return changedFiles.stream().map(ChangedFile::getFilename).toList();
         } catch (JsonProcessingException e) {
