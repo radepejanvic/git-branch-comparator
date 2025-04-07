@@ -5,12 +5,12 @@ import org.example.exceptions.GitHubApiException;
 
 import java.util.*;
 
-public class GitCommitHistoryComparator {
+public class BranchComparator {
 
     private final GitCommandExecutor git;
     private final GitHubApiClient github;
 
-    public GitCommitHistoryComparator(GitCommandExecutor gitCommandExecutor, GitHubApiClient githubApiClient) {
+    public BranchComparator(GitCommandExecutor gitCommandExecutor, GitHubApiClient githubApiClient) {
         this.git = gitCommandExecutor;
         this.github = githubApiClient;
     }

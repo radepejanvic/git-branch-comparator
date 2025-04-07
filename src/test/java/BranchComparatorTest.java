@@ -1,5 +1,5 @@
 import org.example.GitCommandExecutor;
-import org.example.GitCommitHistoryComparator;
+import org.example.BranchComparator;
 import org.example.GitHubApiClient;
 import org.example.exceptions.GitCommandException;
 import org.example.exceptions.GitHubApiException;
@@ -16,7 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class GitCommitHistoryComparatorTest {
+public class BranchComparatorTest {
 
     @Mock
     private GitCommandExecutor mockGit;
@@ -24,12 +24,12 @@ public class GitCommitHistoryComparatorTest {
     @Mock
     private GitHubApiClient mockGitHub;
 
-    private GitCommitHistoryComparator comparator;
+    private BranchComparator comparator;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        comparator = new GitCommitHistoryComparator(mockGit, mockGitHub);
+        comparator = new BranchComparator(mockGit, mockGitHub);
     }
 
     @ParameterizedTest
