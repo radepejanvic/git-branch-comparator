@@ -35,7 +35,7 @@ public class BranchComparator {
      * @see GitCommandExecutor#getModifiedFilesNames(String, String)
      * @see GitHubApiClient#getModifiedFilesNames(String, String)
      */
-    public List<String> compareModifiedFilesBetweenBranches(String localBranch, String remoteBranch) throws GitCommandException, GitHubApiException {
+    public List<String> compareModifiedFiles(String localBranch, String remoteBranch) throws GitCommandException, GitHubApiException {
         List<String> localCommits = git.getCommitHistory(localBranch);
         List<String> remoteCommits = github.getCommitHistory(remoteBranch);
 

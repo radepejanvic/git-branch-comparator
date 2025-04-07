@@ -33,14 +33,14 @@ public class BranchComparatorTest {
     }
 
     @ParameterizedTest
-    @DisplayName("Test compareModifiedFilesBetweenBranches() - No exceptions path")
+    @DisplayName("Test compareModifiedFiles() - No exceptions path")
     @MethodSource("TestCaseProvider#successTestCases")
-    void testCompareModifiedFilesBetweenBranches(String localBranch, String remoteBranch,
-                                                 String lastLocalCommit,String lastRemoteCommit,
-                                                 List<String> localHistory, List<String> remoteHistory,
-                                                 String baseCommit,
-                                                 List<String> localModified, List<String> remoteModified,
-                                                 List<String> expectedCommonModified) throws Exception {
+    void testCompareModifiedFiles(String localBranch, String remoteBranch,
+                                  String lastLocalCommit, String lastRemoteCommit,
+                                  List<String> localHistory, List<String> remoteHistory,
+                                  String baseCommit,
+                                  List<String> localModified, List<String> remoteModified,
+                                  List<String> expectedCommonModified) throws Exception {
 
         when(mockGit.getCommitHistory(localBranch)).thenReturn(localHistory);
         when(mockGitHub.getCommitHistory(remoteBranch)).thenReturn(remoteHistory);
@@ -48,7 +48,7 @@ public class BranchComparatorTest {
         when(mockGit.getModifiedFilesNames(baseCommit, lastLocalCommit)).thenReturn(localModified);
         when(mockGitHub.getModifiedFilesNames(baseCommit, lastRemoteCommit)).thenReturn(remoteModified);
 
-        List<String> commonModifiedFiles = comparator.compareModifiedFilesBetweenBranches(localBranch, remoteBranch);
+        List<String> commonModifiedFiles = comparator.compareModifiedFiles(localBranch, remoteBranch);
 
         assertNotNull(commonModifiedFiles);
         assertEquals(expectedCommonModified.size(), commonModifiedFiles.size());
@@ -67,33 +67,33 @@ public class BranchComparatorTest {
     }
 
     @Test
-    @DisplayName("Test compareModifiedFilesBetweenBranches() - Local commit history failure - GitCommandException")
-    void testCompareModifiedFilesBetweenBranches_LocalCommitHistoryFailure_ThrowsGitCommandException() throws Exception {
+    @DisplayName("Test compareModifiedFiles() - Local commit history failure - GitCommandException")
+    void testCompareModifiedFiles_LocalCommitHistoryFailure_ThrowsGitCommandException() throws Exception {
         String local = "feature", remote = "main";
 
         when(mockGit.getCommitHistory(local)).thenThrow(new GitCommandException("Git error"));
 
-        assertThrows(GitCommandException.class, () -> comparator.compareModifiedFilesBetweenBranches(local, remote));
+        assertThrows(GitCommandException.class, () -> comparator.compareModifiedFiles(local, remote));
 
         verify(mockGit).getCommitHistory(local);
     }
 
     @Test
-    @DisplayName("Test compareModifiedFilesBetweenBranches() - Remote commit history failure - GitHubApiException")
-    void testCompareModifiedFilesBetweenBranches_RemoteCommitHistoryFailure_ThrowsGitHubApiException() throws Exception {
+    @DisplayName("Test compareModifiedFiles() - Remote commit history failure - GitHubApiException")
+    void testCompareModifiedFiles_RemoteCommitHistoryFailure_ThrowsGitHubApiException() throws Exception {
         String local = "feature", remote = "main";
 
         when(mockGit.getCommitHistory(local)).thenReturn(List.of("c1", "c2"));
         when(mockGitHub.getCommitHistory(remote)).thenThrow(new GitHubApiException("GitHub error"));
 
-        assertThrows(GitHubApiException.class, () -> comparator.compareModifiedFilesBetweenBranches(local, remote));
+        assertThrows(GitHubApiException.class, () -> comparator.compareModifiedFiles(local, remote));
 
         verify(mockGit).getCommitHistory(local);
         verify(mockGitHub).getCommitHistory(remote);
     }
 
     @ParameterizedTest
-    @DisplayName("Test compareModifiedFilesBetweenBranches() - Local modified files failure - GitCommandException")
+    @DisplayName("Test compareModifiedFiles() - Local modified files failure - GitCommandException")
     @MethodSource("TestCaseProvider#exceptionTestCases")
     void testCompareModifiedFilesBetweenBranches_LocalModifiedFilesFailure_ThrowsGitCommandException(String localBranch, String remoteBranch,
                                                                                                      String lastLocalCommit,String lastRemoteCommit,
@@ -105,7 +105,7 @@ public class BranchComparatorTest {
 
         when(mockGit.getModifiedFilesNames(baseCommit, lastLocalCommit)).thenThrow(new GitCommandException("Git error"));
 
-        assertThrows(GitCommandException.class, () -> comparator.compareModifiedFilesBetweenBranches(localBranch, remoteBranch));
+        assertThrows(GitCommandException.class, () -> comparator.compareModifiedFiles(localBranch, remoteBranch));
 
         verify(mockGit).getCommitHistory(localBranch);
         verify(mockGitHub).getCommitHistory(remoteBranch);
@@ -113,7 +113,7 @@ public class BranchComparatorTest {
     }
 
     @ParameterizedTest
-    @DisplayName("Test compareModifiedFilesBetweenBranches() - Remote modified files failure - GitHubApiException")
+    @DisplayName("Test compareModifiedFiles() - Remote modified files failure - GitHubApiException")
     @MethodSource("TestCaseProvider#exceptionTestCases")
     void testCompareModifiedFilesBetweenBranches_RemoteModifiedFilesFailure_ThrowsGitHubApiException(String localBranch, String remoteBranch,
                                                                                                      String lastLocalCommit,String lastRemoteCommit,
@@ -127,7 +127,7 @@ public class BranchComparatorTest {
         when(mockGit.getModifiedFilesNames(baseCommit, lastLocalCommit)).thenReturn(localModified);
         when(mockGitHub.getModifiedFilesNames(baseCommit, lastRemoteCommit)).thenThrow(new GitHubApiException("GitHub error"));
 
-        assertThrows(GitHubApiException.class, () -> comparator.compareModifiedFilesBetweenBranches(localBranch, remoteBranch));
+        assertThrows(GitHubApiException.class, () -> comparator.compareModifiedFiles(localBranch, remoteBranch));
 
         verify(mockGit).getCommitHistory(localBranch);
         verify(mockGitHub).getCommitHistory(remoteBranch);
