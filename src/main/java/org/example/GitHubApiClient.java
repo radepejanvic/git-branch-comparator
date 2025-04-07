@@ -44,8 +44,6 @@ public class GitHubApiClient {
 
     /**
      * Retrieves the commit history for the specified branch from the GitHub repository.
-     * This method interacts with the GitHub API, handles pagination for large result sets,
-     * and returns the commit history in reverse chronological order (most recent first).
      *
      * @param branch The name of the branch for which commit history is to be fetched.
      * @return List of commit SHA hashes as strings in reverse chronological order (most recent first).
