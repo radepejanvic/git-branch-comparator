@@ -2,7 +2,7 @@ package org.example;
 
 import java.util.*;
 
-public class CommitHistoryComparator {
+public class CommitComparingUtils {
 
     /**
      * Finds the most recent common commit (merge base) between local and remote commit histories.
@@ -12,7 +12,7 @@ public class CommitHistoryComparator {
      * @param remote List of local commit SHA hashes in reverse chronological order (most recent first).
      * @return Optional containing the most recent common commit hash, or an empty Optional if no common commit is found.
      */
-    public static Optional<String> findBaseCommit(List<String> local, List<String> remote) {
+    public Optional<String> findBaseCommit(List<String> local, List<String> remote) {
         if (local.isEmpty() || remote.isEmpty()) return Optional.empty();
 
         int i = local.size() - 1;
@@ -35,7 +35,7 @@ public class CommitHistoryComparator {
      * @param remote List of modified file paths from remote commit history between the merge base and the most recent commit.
      * @return List of file paths that are present in both lists.
      */
-    public static List<String> findCommonModifiedFiles(List<String> local, List<String> remote) {
+    public List<String> findCommonModifiedFiles(List<String> local, List<String> remote) {
         if (local.isEmpty() || remote.isEmpty()) return new ArrayList<>();
 
         Set<String> localSet = new HashSet<>(local);
