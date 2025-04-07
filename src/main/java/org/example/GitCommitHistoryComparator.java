@@ -39,10 +39,11 @@ public class GitCommitHistoryComparator {
         List<String> localCommits = git.getCommitHistory(localBranch);
         List<String> remoteCommits = github.getCommitHistory(remoteBranch);
 
-        String baseCommit = findBaseCommit(localCommits, remoteCommits).orElse(null);
+        Optional<String> baseCommit = findBaseCommit(localCommits, remoteCommits);
+        if (baseCommit.isEmpty()) return Collections.emptyList();
 
-        List<String> localModifiedFiles = git.getModifiedFilesNames(baseCommit, localCommits.getFirst());
-        List<String> remoteModifiedFiles = github.getModifiedFilesNames(baseCommit, remoteCommits.getFirst());
+        List<String> localModifiedFiles = git.getModifiedFilesNames(baseCommit.get(), localCommits.getFirst());
+        List<String> remoteModifiedFiles = github.getModifiedFilesNames(baseCommit.get(), remoteCommits.getFirst());
 
         return findCommonModifiedFiles(localModifiedFiles, remoteModifiedFiles);
     }
@@ -66,9 +67,13 @@ public class GitCommitHistoryComparator {
             j--;
         }
 
-        if (i >= 0) return Optional.of(local.get(++i));
-        else if (j >= 0) return Optional.of(remote.get(++j));
-        else return Optional.empty();
+        int localIndex = i + 1;
+        int remoteIndex = j + 1;
+
+        if (localIndex < local.size()) return Optional.of(local.get(localIndex));
+        if (remoteIndex < remote.size()) return Optional.of(remote.get(remoteIndex));
+
+        return Optional.empty();
     }
 
     /**
