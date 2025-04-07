@@ -62,25 +62,24 @@ public class GitCommandExecutorTest {
     }
 
     @Test
-    @DisplayName("Test getCommitHistory() - Error reading input stream - IOException")
-    void testGetCommitHistory_ErrorReadingInputStream_ThrowsIOException() throws Exception {
+    @DisplayName("Test getCommitHistory() - Error reading input stream - GitCommandException")
+    void testGetCommitHistory_ErrorReadingInputStream_ThrowsGitCommandException() throws Exception {
         when(mockCommandUtils.executeCommand(any(), anyList())).thenReturn(mockProcess);
         when(mockCommandUtils.readOutput(any())).thenThrow(new IOException("Error reading input stream"));
 
-        IOException exception = assertThrows(IOException.class,
+        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
                 () -> gitCommandExecutor.getCommitHistory("branchB"));
 
         assertTrue(exception.getMessage().contains("Error reading input stream"));
     }
 
     @Test
-    @DisplayName("Test getCommitHistory() - Error thread was interrupted - InterruptedException")
-    void testGetCommitHistory_ErrorProcessWait_ThrowsInterruptException() throws Exception {
+    @DisplayName("Test getCommitHistory() - Error thread was interrupted - GitCommandException")
+    void testGetCommitHistory_ErrorProcessWait_ThrowsGitCommandException() throws Exception {
         when(mockCommandUtils.executeCommand(any(), anyList())).thenReturn(mockProcess);
         when(mockProcess.waitFor()).thenThrow(new InterruptedException("Thread was interrupted"));
 
-
-        InterruptedException exception = assertThrows(InterruptedException.class,
+        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
                 () -> gitCommandExecutor.getCommitHistory("branchB"));
 
         assertTrue(exception.getMessage().contains("Thread was interrupted"));
@@ -112,29 +111,29 @@ public class GitCommandExecutorTest {
         GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
                 () -> gitCommandExecutor.getModifiedFilesNames("commit1", "commit2"));
 
-        assertTrue(exception.getMessage().contains("Git diff --name-only command failed commits: commit1 and commit2."));
+        assertTrue(exception.getMessage().contains("Git diff --name-only command failed for commits: commit1 and commit2."));
     }
 
     @Test
-    @DisplayName("Test getModifiedFilesNames() - Error reading input stream - IOException")
-    void testGetModifiedFilesNames_ErrorReadingInputStream_ThrowsIOException() throws Exception {
+    @DisplayName("Test getModifiedFilesNames() - Error reading input stream - GitCommandException")
+    void testGetModifiedFilesNames_ErrorReadingInputStream_ThrowsGitCommandException() throws Exception {
         when(mockCommandUtils.executeCommand(any(), anyList())).thenReturn(mockProcess);
         when(mockCommandUtils.readOutput(any())).thenThrow(new IOException("Error reading input stream"));
 
-        IOException exception = assertThrows(IOException.class,
+        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
                 () -> gitCommandExecutor.getModifiedFilesNames("commit1", "commit2"));
 
         assertTrue(exception.getMessage().contains("Error reading input stream"));
     }
 
     @Test
-    @DisplayName("Test getModifiedFilesNames() - Error thread was interrupted - InterruptedException")
-    void testGetModifiedFilesNames_ErrorProcessWait_ThrowsInterruptException() throws Exception {
+    @DisplayName("Test getModifiedFilesNames() - Error thread was interrupted - GitCommandException")
+    void testGetModifiedFilesNames_ErrorProcessWait_ThrowsGitCommandException() throws Exception {
         when(mockCommandUtils.executeCommand(any(), anyList())).thenReturn(mockProcess);
         when(mockProcess.waitFor()).thenThrow(new InterruptedException("Thread was interrupted"));
 
 
-        InterruptedException exception = assertThrows(InterruptedException.class,
+        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
                 () -> gitCommandExecutor.getModifiedFilesNames("commit1", "commit2"));
 
         assertTrue(exception.getMessage().contains("Thread was interrupted"));
