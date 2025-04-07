@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.exceptions.GitHubApiException;
 
 public class GitHubApiClient {
     private static final Pattern LINK_PATTERN = Pattern.compile("<(.*?)>;\\s*rel=\"next\"");
@@ -131,12 +132,6 @@ public class GitHubApiClient {
             throw new GitHubApiException(String.format("Error parsing the response body: %s", e));
         } catch (IOException | InterruptedException e) {
             throw new GitHubApiException(String.format("GitHub compare commits failed: %s", e));
-        }
-    }
-
-    public class GitHubApiException extends Exception {
-        public GitHubApiException(String message) {
-            super(message);
         }
     }
 }

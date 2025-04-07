@@ -1,5 +1,6 @@
 import org.example.CommandUtils;
 import org.example.GitCommandExecutor;
+import org.example.exceptions.GitCommandException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ public class GitCommandExecutorTest {
         when(mockCommandUtils.executeCommand(any(), anyList())).thenReturn(mockProcess);
         when(mockProcess.waitFor()).thenReturn(1);
 
-        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
+        GitCommandException exception = assertThrows(GitCommandException.class,
                 () -> gitCommandExecutor.getCommitHistory("branchB"));
 
         assertTrue(exception.getMessage().contains("Git rev-list command failed for branch: branchB"));
@@ -67,7 +68,7 @@ public class GitCommandExecutorTest {
         when(mockCommandUtils.executeCommand(any(), anyList())).thenReturn(mockProcess);
         when(mockCommandUtils.readOutput(any())).thenThrow(new IOException("Error reading input stream"));
 
-        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
+        GitCommandException exception = assertThrows(GitCommandException.class,
                 () -> gitCommandExecutor.getCommitHistory("branchB"));
 
         assertTrue(exception.getMessage().contains("Error reading input stream"));
@@ -79,7 +80,7 @@ public class GitCommandExecutorTest {
         when(mockCommandUtils.executeCommand(any(), anyList())).thenReturn(mockProcess);
         when(mockProcess.waitFor()).thenThrow(new InterruptedException("Thread was interrupted"));
 
-        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
+        GitCommandException exception = assertThrows(GitCommandException.class,
                 () -> gitCommandExecutor.getCommitHistory("branchB"));
 
         assertTrue(exception.getMessage().contains("Thread was interrupted"));
@@ -108,7 +109,7 @@ public class GitCommandExecutorTest {
         when(mockCommandUtils.executeCommand(any(), anyList())).thenReturn(mockProcess);
         when(mockProcess.waitFor()).thenReturn(1);
 
-        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
+        GitCommandException exception = assertThrows(GitCommandException.class,
                 () -> gitCommandExecutor.getModifiedFilesNames("commit1", "commit2"));
 
         assertTrue(exception.getMessage().contains("Git diff --name-only command failed for commits: commit1 and commit2."));
@@ -120,7 +121,7 @@ public class GitCommandExecutorTest {
         when(mockCommandUtils.executeCommand(any(), anyList())).thenReturn(mockProcess);
         when(mockCommandUtils.readOutput(any())).thenThrow(new IOException("Error reading input stream"));
 
-        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
+        GitCommandException exception = assertThrows(GitCommandException.class,
                 () -> gitCommandExecutor.getModifiedFilesNames("commit1", "commit2"));
 
         assertTrue(exception.getMessage().contains("Error reading input stream"));
@@ -133,10 +134,9 @@ public class GitCommandExecutorTest {
         when(mockProcess.waitFor()).thenThrow(new InterruptedException("Thread was interrupted"));
 
 
-        GitCommandExecutor.GitCommandException exception = assertThrows(GitCommandExecutor.GitCommandException.class,
+        GitCommandException exception = assertThrows(GitCommandException.class,
                 () -> gitCommandExecutor.getModifiedFilesNames("commit1", "commit2"));
 
         assertTrue(exception.getMessage().contains("Thread was interrupted"));
     }
-
 }

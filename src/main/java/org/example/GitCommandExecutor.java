@@ -1,14 +1,15 @@
 package org.example;
 
+import org.example.exceptions.GitCommandException;
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GitCommandExecutor {
 
     private final File repo;
-    public final CommandUtils commandUtils;
+    private final CommandUtils commandUtils;
 
     public GitCommandExecutor(String repoPath, CommandUtils commandUtils) {
         repo = new File(repoPath);
@@ -67,14 +68,4 @@ public class GitCommandExecutor {
             throw new GitCommandException(String.format("Git diff --name-only command failed for commits: %s and %s. Error: %s", commit1, commit2, e));
         }
     }
-
-    /**
-     * Custom exception for Git command failures.
-     */
-    public class GitCommandException extends Exception {
-        public GitCommandException(String message) {
-            super(message);
-        }
-    }
-
 }
